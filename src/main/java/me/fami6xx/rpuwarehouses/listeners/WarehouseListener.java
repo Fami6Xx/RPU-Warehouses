@@ -107,8 +107,13 @@ public class WarehouseListener implements Listener {
             }
 
             // Open the warehouse menu for this job
-            PlayerMenu playerMenu = RPUniverse.getInstance().getMenuManager().getPlayerMenu(player);
-            new WarehouseJobMenu(playerMenu, warehouse.getJobName()).open();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    PlayerMenu playerMenu = RPUniverse.getInstance().getMenuManager().getPlayerMenu(player);
+                    new WarehouseJobMenu(playerMenu, warehouse.getJobName()).open();
+                }
+            }.runTaskLater(RPU_Warehouses.getInstance(), 1L);
         }
     }
 
