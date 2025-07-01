@@ -202,5 +202,4 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
         item.setItemMeta(meta);
         return item;
     }
-
 }
