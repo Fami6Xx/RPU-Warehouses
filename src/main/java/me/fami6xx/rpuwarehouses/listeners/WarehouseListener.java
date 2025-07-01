@@ -1,9 +1,13 @@
 package me.fami6xx.rpuwarehouses.listeners;
 
+import me.fami6xx.rpuniverse.RPUniverse;
+import me.fami6xx.rpuniverse.core.menuapi.PlayerMenu;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
 import me.fami6xx.rpuwarehouses.RPU_Warehouses;
 import me.fami6xx.rpuwarehouses.data.Warehouse;
 import me.fami6xx.rpuwarehouses.data.WarehouseManager;
+import me.fami6xx.rpuwarehouses.menus.WarehouseJobMenu;
+import me.fami6xx.rpuwarehouses.menus.WarehousePageLimitMenu;
 import me.fami6xx.rpuwarehouses.other.RPULanguageAddon;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,6 +20,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,18 +62,15 @@ public class WarehouseListener implements Listener {
             // Create the warehouse
             Warehouse warehouse = manager.createWarehouse(jobName, event.getBlock().getLocation());
 
+            new BukkitRunnable() {
+                public void run() {
+                    // Update the sign after a short delay to ensure it is created properly
+                    updateWarehouseSign(event.getBlock(), warehouse);
+                }
+            }.runTaskLater(RPU_Warehouses.getInstance(), 1L);
+
             // Format the sign
             HashMap<String, String> placeholders = new HashMap<>();
-            placeholders.put("jobName", jobName);
-            placeholders.put("itemCount", "0");
-
-            String[] lines = FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseSignFormat, placeholders).split("\n");
-            for (int i = 0; i < Math.min(lines.length, 4); i++) {
-                event.setLine(i, lines[i]);
-            }
-
-            // Send confirmation message
-            placeholders.clear();
             placeholders.put("jobName", jobName);
             player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseCreated, placeholders));
         }
@@ -104,34 +106,9 @@ public class WarehouseListener implements Listener {
                 return;
             }
 
-            // Show the player what items are in the warehouse
-            HashMap<String, String> placeholders = new HashMap<>();
-            placeholders.put("jobName", warehouse.getJobName());
-            player.sendMessage(FamiUtils.replaceAndFormat("&a&lWarehouse for job &f{jobName}", placeholders));
-
-            // Get all warehouses for this job
-            List<Warehouse> warehouses = manager.getWarehousesByJob(warehouse.getJobName());
-
-            // Show items in the warehouses
-            boolean hasItems = false;
-            for (Warehouse w : warehouses) {
-                Map<String, ItemStack> warehouseItems = w.getItems();
-                for (String key : warehouseItems.keySet()) {
-                    ItemStack item = warehouseItems.get(key);
-                    placeholders.clear();
-                    placeholders.put("amount", String.valueOf(item.getAmount()));
-                    placeholders.put("item", item.getType().name().toLowerCase().replace("_", " "));
-                    player.sendMessage(FamiUtils.replaceAndFormat("&7- &f{amount}x {item}", placeholders));
-                    hasItems = true;
-                }
-            }
-
-            if (!hasItems) {
-                player.sendMessage(ChatColor.GRAY + "This warehouse is empty.");
-            } else {
-                player.sendMessage(ChatColor.GRAY + "Shift + right-click with an item to add it to the warehouse.");
-                player.sendMessage(ChatColor.GRAY + "Shift + left-click to take the first item from the warehouse.");
-            }
+            // Open the warehouse menu for this job
+            PlayerMenu playerMenu = RPUniverse.getInstance().getMenuManager().getPlayerMenu(player);
+            new WarehouseJobMenu(playerMenu, warehouse.getJobName()).open();
         }
     }
 
@@ -306,11 +283,9 @@ public class WarehouseListener implements Listener {
                 return;
             }
 
-            // Tell the player how to set the page limit
-            HashMap<String, String> placeholders = new HashMap<>();
-            placeholders.put("jobName", warehouse.getJobName());
-            player.sendMessage(FamiUtils.replaceAndFormat("&aTo set the page limit for job &f{jobName}&a, use the command:", placeholders));
-            player.sendMessage(ChatColor.YELLOW + "/warehouse pagelimit " + warehouse.getJobName() + " <number>");
+            // Open the page limit menu for this job
+            PlayerMenu playerMenu = RPUniverse.getInstance().getMenuManager().getPlayerMenu(player);
+            new WarehousePageLimitMenu(playerMenu, warehouse.getJobName()).open();
         }
     }
 
@@ -326,8 +301,8 @@ public class WarehouseListener implements Listener {
 
             // Format the sign
             HashMap<String, String> placeholders = new HashMap<>();
-            placeholders.put("jobName", warehouse.getJobName());
-            placeholders.put("itemCount", String.valueOf(warehouse.getItems().size()));
+            placeholders.put("{jobName}", warehouse.getJobName());
+            placeholders.put("{itemCount}", String.valueOf(warehouse.getItems().size()));
 
             String[] lines = FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseSignFormat, placeholders).split("\n");
             for (int i = 0; i < Math.min(lines.length, 4); i++) {

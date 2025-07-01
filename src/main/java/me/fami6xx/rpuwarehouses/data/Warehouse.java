@@ -39,7 +39,10 @@ public class Warehouse {
     public Warehouse(Map<String, Object> map) {
         this.id = UUID.fromString((String) map.get("id"));
         this.jobName = (String) map.get("jobName");
-        this.signLocation = (Location) map.get("signLocation");
+        this.signLocation = GsonManager.getGson().fromJson(
+            GsonManager.getGson().toJson(map.get("signLocation")),
+            Location.class
+        );
 
         // Initialize items map
         this.items = new HashMap<>();
@@ -190,12 +193,12 @@ public class Warehouse {
         Map<String, Object> map = new HashMap<>();
         map.put("id", id.toString());
         map.put("jobName", jobName);
-        map.put("signLocation", signLocation);
+        map.put("signLocation", GsonManager.getGson().toJsonTree(signLocation, Location.class));
 
         // Convert ItemStack map to a format that GSON can properly serialize
         Map<String, Object> serializedItems = new HashMap<>();
         for (Map.Entry<String, ItemStack> entry : items.entrySet()) {
-            serializedItems.put(entry.getKey(), GsonManager.getGson().toJsonTree(entry.getValue(), ItemStack.class).getAsJsonObject());
+            serializedItems.put(entry.getKey(), GsonManager.getGson().toJsonTree(entry.getValue(), ItemStack.class));
         }
         map.put("items", serializedItems);
 

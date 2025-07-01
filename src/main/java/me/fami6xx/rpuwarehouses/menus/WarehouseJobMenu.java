@@ -101,6 +101,12 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
             int index = getSlotIndex(slot);
             if (index >= 0 && index < warehouseItems.size()) {
                 ItemStack clickedItem = warehouseItems.get(index).clone();
+                // Remove the lore we added earlier
+                if (clickedItem.getItemMeta() != null && clickedItem.getItemMeta().getLore() != null) {
+                    List<String> lore = new ArrayList<>(clickedItem.getItemMeta().getLore());
+                    lore.remove(lore.size() - 1); // Remove the last line which is the lore we added
+                    clickedItem = setLore(clickedItem, lore);
+                }
 
                 // If there's more than one of this item, open the amount menu
                 if (clickedItem.getAmount() > 1) {
@@ -126,7 +132,7 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
     @Override
     public String getMenuName() {
         HashMap<String, String> placeholders = new HashMap<>();
-        placeholders.put("jobName", jobName);
+        placeholders.put("{jobName}", jobName);
         return FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseOpenMenuName, placeholders);
     }
 
