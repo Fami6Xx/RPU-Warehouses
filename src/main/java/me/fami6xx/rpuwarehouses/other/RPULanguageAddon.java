@@ -9,8 +9,9 @@ public class RPULanguageAddon extends AbstractAddonLanguage {
 
     // Menu items
     public static final String WarehouseAddItemDisplayName = "&a&lAdd Item";
-    public static final String WarehouseAddItemLore = "&7Click to add an item to the warehouse.";
+    public static final String WarehouseAddItemLore = "&7Shift-right-click to add an item to the warehouse.";
     public static final String WarehouseItemLore = "&7Click to take this item from the warehouse.";
+    public static final String WarehouseItemAmount = "&7Amount: &f{itemAmount}";
 
     // Buttons
     public static final String WarehouseAmountIncreaseDisplayName = "&a&l+{amount}";

@@ -120,7 +120,7 @@ public class WarehouseAmountMenu extends Menu {
 
         // Create a confirmation button
         placeholders.clear();
-        placeholders.put("amount", String.valueOf(currentAmount));
+        placeholders.put("{amount}", String.valueOf(currentAmount));
 
         // Use the item's display name if available, otherwise use a formatted type name
         String itemName;
@@ -129,7 +129,7 @@ public class WarehouseAmountMenu extends Menu {
         } else {
             itemName = item.getType().name().toLowerCase().replace("_", " ");
         }
-        placeholders.put("item", itemName);
+        placeholders.put("{item}", itemName);
 
         inventory.setItem(26, createButton(Material.GREEN_WOOL, 
                 RPULanguageAddon.WarehouseAmountConfirmDisplayName, 
@@ -168,7 +168,7 @@ public class WarehouseAmountMenu extends Menu {
         String lore = amount < 0 ? RPULanguageAddon.WarehouseAmountDecreaseLore : RPULanguageAddon.WarehouseAmountIncreaseLore;
 
         HashMap<String, String> placeholders = new HashMap<>();
-        placeholders.put("amount", String.valueOf(Math.abs(amount)));
+        placeholders.put("{amount}", String.valueOf(Math.abs(amount)));
 
         inventory.setItem(slot, createButton(material, displayName, lore, placeholders));
     }

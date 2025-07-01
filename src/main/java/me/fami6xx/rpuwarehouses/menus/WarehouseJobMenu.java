@@ -44,6 +44,10 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
                 }
 
                 lore.add("");
+                HashMap<String, String> placeholders = new HashMap<>();
+                placeholders.put("{jobName}", jobName);
+                placeholders.put("{itemAmount}", String.valueOf(item.getAmount()));
+                lore.add(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemAmount, placeholders));
                 lore.add(FamiUtils.format(RPULanguageAddon.WarehouseItemLore));
 
                 item = setLore(item, lore);
@@ -104,7 +108,9 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
                 // Remove the lore we added earlier
                 if (clickedItem.getItemMeta() != null && clickedItem.getItemMeta().getLore() != null) {
                     List<String> lore = new ArrayList<>(clickedItem.getItemMeta().getLore());
-                    lore.remove(lore.size() - 1); // Remove the last line which is the lore we added
+                    for (int i = 0; i < 3; i++) {
+                        lore.removeLast();
+                    }
                     clickedItem = setLore(clickedItem, lore);
                 }
 
@@ -151,8 +157,7 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
     public void giveItemToPlayer(Player player, ItemStack item, int amount) {
         // Check if the player has enough inventory space
         if (player.getInventory().firstEmpty() == -1) {
-            HashMap<String, String> placeholders = new HashMap<>();
-            player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseInventoryFull, placeholders));
+            player.sendMessage(FamiUtils.formatWithPrefix(RPULanguageAddon.WarehouseInventoryFull));
             return;
         }
 
@@ -171,7 +176,7 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
 
                     // Send confirmation message
                     HashMap<String, String> placeholders = new HashMap<>();
-                    placeholders.put("amount", String.valueOf(amount));
+                    placeholders.put("{amount}", String.valueOf(amount));
 
                     // Use item's display name if available, otherwise use formatted type name
                     String itemName;
@@ -180,9 +185,9 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
                     } else {
                         itemName = item.getType().name().toLowerCase().replace("_", " ");
                     }
-                    placeholders.put("item", itemName);
+                    placeholders.put("{item}", itemName);
 
-                    player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemTaken, placeholders));
+                    player.sendMessage(FamiUtils.formatWithPrefix(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemTaken, placeholders)));
 
                     // Close the menu and update the warehouse
                     player.closeInventory();
@@ -193,7 +198,7 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
 
         // If we get here, no warehouse had enough of the item
         HashMap<String, String> placeholders = new HashMap<>();
-        player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseNotEnoughItems, placeholders));
+        player.sendMessage(FamiUtils.formatWithPrefix(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseNotEnoughItems, placeholders)));
     }
 
     private ItemStack setLore(ItemStack item, List<String> lore) {

@@ -54,7 +54,7 @@ public class WarehouseListener implements Listener {
             // Check if a warehouse already exists at this location
             WarehouseManager manager = RPU_Warehouses.getInstance().getWarehouseManager();
             if (manager.getWarehouseByLocation(event.getBlock().getLocation()) != null) {
-                player.sendMessage(FamiUtils.format(RPULanguageAddon.WarehouseAlreadyExists));
+                player.sendMessage(FamiUtils.formatWithPrefix(RPULanguageAddon.WarehouseAlreadyExists));
                 event.setCancelled(true);
                 return;
             }
@@ -71,8 +71,8 @@ public class WarehouseListener implements Listener {
 
             // Format the sign
             HashMap<String, String> placeholders = new HashMap<>();
-            placeholders.put("jobName", jobName);
-            player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseCreated, placeholders));
+            placeholders.put("{jobName}", jobName);
+            player.sendMessage(FamiUtils.formatWithPrefix(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseCreated, placeholders)));
         }
     }
 
@@ -149,7 +149,7 @@ public class WarehouseListener implements Listener {
 
             // Check if the player has enough inventory space
             if (player.getInventory().firstEmpty() == -1) {
-                player.sendMessage(FamiUtils.format(RPULanguageAddon.WarehouseInventoryFull));
+                player.sendMessage(FamiUtils.formatWithPrefix(RPULanguageAddon.WarehouseInventoryFull));
                 return;
             }
 
@@ -172,11 +172,19 @@ public class WarehouseListener implements Listener {
                         giveItem.setAmount(amount);
                         player.getInventory().addItem(giveItem);
 
+                        String itemName;
+                        // If the item has a custom name, use that; otherwise, use the material name
+                        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                            itemName = item.getItemMeta().getDisplayName();
+                        } else {
+                            itemName = item.getType().name().toLowerCase().replace("_", " ");
+                        }
+
                         // Send confirmation message
                         HashMap<String, String> placeholders = new HashMap<>();
-                        placeholders.put("amount", String.valueOf(amount));
-                        placeholders.put("item", item.getType().name().toLowerCase().replace("_", " "));
-                        player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemTaken, placeholders));
+                        placeholders.put("{amount}", String.valueOf(amount));
+                        placeholders.put("{item}", itemName);
+                        player.sendMessage(FamiUtils.formatWithPrefix(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemTaken, placeholders)));
 
                         // Update the sign
                         updateWarehouseSign(block, w);
@@ -244,10 +252,18 @@ public class WarehouseListener implements Listener {
                 player.getInventory().getItemInMainHand().setAmount(0);
             }
 
+            String itemName;
+            // If the item has a custom name, use that; otherwise, use the material name
+            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+                itemName = item.getItemMeta().getDisplayName();
+            } else {
+                itemName = item.getType().name().toLowerCase().replace("_", " ");
+            }
+
             // Send confirmation message
             HashMap<String, String> placeholders = new HashMap<>();
-            placeholders.put("amount", String.valueOf(amount));
-            placeholders.put("item", item.getType().name().toLowerCase().replace("_", " "));
+            placeholders.put("{amount}", String.valueOf(amount));
+            placeholders.put("{item}", itemName);
             player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemAdded, placeholders));
 
             // Update the sign
