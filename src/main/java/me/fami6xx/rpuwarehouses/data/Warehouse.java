@@ -1,5 +1,6 @@
 package me.fami6xx.rpuwarehouses.data;
 
+import me.fami6xx.rpuwarehouses.data.gson.GsonManager;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,7 +40,21 @@ public class Warehouse {
         this.id = UUID.fromString((String) map.get("id"));
         this.jobName = (String) map.get("jobName");
         this.signLocation = (Location) map.get("signLocation");
-        this.items = (Map<String, ItemStack>) map.get("items");
+
+        // Initialize items map
+        this.items = new HashMap<>();
+
+        // Deserialize items from their JSON representation
+        if (map.containsKey("items")) {
+            Map<String, Object> serializedItems = (Map<String, Object>) map.get("items");
+            for (Map.Entry<String, Object> entry : serializedItems.entrySet()) {
+                ItemStack item = GsonManager.getGson().fromJson(
+                    GsonManager.getGson().toJson(entry.getValue()),
+                    ItemStack.class
+                );
+                this.items.put(entry.getKey(), item);
+            }
+        }
     }
 
     /**
@@ -176,7 +191,14 @@ public class Warehouse {
         map.put("id", id.toString());
         map.put("jobName", jobName);
         map.put("signLocation", signLocation);
-        map.put("items", items);
+
+        // Convert ItemStack map to a format that GSON can properly serialize
+        Map<String, Object> serializedItems = new HashMap<>();
+        for (Map.Entry<String, ItemStack> entry : items.entrySet()) {
+            serializedItems.put(entry.getKey(), GsonManager.getGson().toJsonTree(entry.getValue(), ItemStack.class).getAsJsonObject());
+        }
+        map.put("items", serializedItems);
+
         return map;
     }
 }
