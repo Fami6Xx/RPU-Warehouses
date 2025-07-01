@@ -1,5 +1,6 @@
 package me.fami6xx.rpuwarehouses.menus;
 
+import me.fami6xx.rpuniverse.core.menuapi.PlayerMenu;
 import me.fami6xx.rpuniverse.core.menuapi.types.Menu;
 import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
@@ -28,7 +29,8 @@ public class WarehouseAmountMenu extends Menu {
      * @param item The item to take
      * @param jobName The job name
      */
-    public WarehouseAmountMenu(WarehouseJobMenu parentMenu, ItemStack item, String jobName) {
+    public WarehouseAmountMenu(WarehouseJobMenu parentMenu, ItemStack item, String jobName, PlayerMenu player) {
+        super(player);
         this.parentMenu = parentMenu;
         this.item = item.clone();
         this.jobName = jobName;
@@ -81,7 +83,7 @@ public class WarehouseAmountMenu extends Menu {
                 break;
             case 18: // Cancel
                 player.closeInventory();
-                parentMenu.openMenu(player);
+                parentMenu.open();
                 break;
             case 26: // Confirm
                 player.closeInventory();
@@ -116,11 +118,11 @@ public class WarehouseAmountMenu extends Menu {
                 RPULanguageAddon.WarehouseAmountCancelLore, 
                 placeholders));
 
-        // Create confirm button
+        // Create a confirmation button
         placeholders.clear();
         placeholders.put("amount", String.valueOf(currentAmount));
 
-        // Use item's display name if available, otherwise use formatted type name
+        // Use the item's display name if available, otherwise use a formatted type name
         String itemName;
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             itemName = item.getItemMeta().getDisplayName();

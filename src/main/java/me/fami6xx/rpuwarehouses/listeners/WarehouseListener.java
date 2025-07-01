@@ -1,11 +1,9 @@
 package me.fami6xx.rpuwarehouses.listeners;
 
-import me.fami6xx.rpuniverse.core.menuapi.PlayerMenu;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
 import me.fami6xx.rpuwarehouses.RPU_Warehouses;
 import me.fami6xx.rpuwarehouses.data.Warehouse;
 import me.fami6xx.rpuwarehouses.data.WarehouseManager;
-import me.fami6xx.rpuwarehouses.menus.WarehousePageLimitMenu;
 import me.fami6xx.rpuwarehouses.other.RPULanguageAddon;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -25,7 +23,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class WarehouseListener implements Listener {
-    private static final Pattern WAREHOUSE_PATTERN = Pattern.compile("(?i)\\[warehouse\\]");
+    private static final Pattern WAREHOUSE_PATTERN = Pattern.compile("(?i)\\[warehouse]");
 
     @EventHandler
     public void onSignCreate(SignChangeEvent event) {

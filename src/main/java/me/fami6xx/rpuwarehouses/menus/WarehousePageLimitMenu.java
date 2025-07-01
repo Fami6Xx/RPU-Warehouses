@@ -1,5 +1,6 @@
 package me.fami6xx.rpuwarehouses.menus;
 
+import me.fami6xx.rpuniverse.core.menuapi.PlayerMenu;
 import me.fami6xx.rpuniverse.core.menuapi.types.Menu;
 import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
@@ -30,39 +31,10 @@ public class WarehousePageLimitMenu extends Menu {
      * @param menu The parent menu
      * @param jobName The job name
      */
-    public WarehousePageLimitMenu(me.fami6xx.rpuniverse.core.menuapi.PlayerMenu menu, String jobName) {
+    public WarehousePageLimitMenu(PlayerMenu menu, String jobName) {
         super(menu);
         this.jobName = jobName;
         this.currentPageLimit = RPU_Warehouses.getInstance().getJobPageLimits().getPageLimit(jobName);
-    }
-
-    /**
-     * Opens a new page limit menu for a player.
-     *
-     * @param player The player to open the menu for
-     * @param jobName The job name
-     */
-    public static void openMenu(Player player, String jobName) {
-        // Create a new player menu using reflection to bypass protected constructor
-        try {
-            // Get the PlayerMenu class
-            Class<?> playerMenuClass = Class.forName("me.fami6xx.rpuniverse.core.menuapi.PlayerMenu");
-
-            // Get the constructor
-            java.lang.reflect.Constructor<?> constructor = playerMenuClass.getDeclaredConstructor(Player.class);
-
-            // Make it accessible
-            constructor.setAccessible(true);
-
-            // Create a new instance
-            Object playerMenu = constructor.newInstance(player);
-
-            // Create and open the page limit menu
-            new WarehousePageLimitMenu((me.fami6xx.rpuniverse.core.menuapi.PlayerMenu) playerMenu, jobName).openMenu(player);
-        } catch (Exception e) {
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "An error occurred while opening the menu.");
-        }
     }
 
     @Override

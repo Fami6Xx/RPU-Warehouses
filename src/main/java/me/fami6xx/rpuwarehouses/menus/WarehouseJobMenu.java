@@ -1,5 +1,6 @@
 package me.fami6xx.rpuwarehouses.menus;
 
+import me.fami6xx.rpuniverse.RPUniverse;
 import me.fami6xx.rpuniverse.core.menuapi.PlayerMenu;
 import me.fami6xx.rpuniverse.core.menuapi.types.EasyPaginatedMenu;
 import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
@@ -13,9 +14,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
                 lore.add("");
                 lore.add(FamiUtils.format(RPULanguageAddon.WarehouseItemLore));
 
-                item = FamiUtils.setLore(item, lore);
+                item = setLore(item, lore);
 
                 warehouseItems.add(item);
             }
@@ -97,13 +98,14 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
 
         // Check if the clicked slot is in the paginated area
         if (slot < 45) {
-            int index = getIndexFromSlot(slot);
+            int index = getSlotIndex(slot);
             if (index >= 0 && index < warehouseItems.size()) {
                 ItemStack clickedItem = warehouseItems.get(index).clone();
 
                 // If there's more than one of this item, open the amount menu
                 if (clickedItem.getAmount() > 1) {
-                    new WarehouseAmountMenu(this, clickedItem, jobName).open(player);
+                    PlayerMenu playerMenu = RPUniverse.getInstance().getMenuManager().getPlayerMenu(player);
+                    new WarehouseAmountMenu(this, clickedItem, jobName, playerMenu).open();
                 } else {
                     // Otherwise, just give the player the item directly
                     giveItemToPlayer(player, clickedItem, 1);
@@ -187,4 +189,18 @@ public class WarehouseJobMenu extends EasyPaginatedMenu {
         HashMap<String, String> placeholders = new HashMap<>();
         player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseNotEnoughItems, placeholders));
     }
+
+    private ItemStack setLore(ItemStack item, List<String> lore) {
+        if (item == null) {
+            return null;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return item;
+        }
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
 }
