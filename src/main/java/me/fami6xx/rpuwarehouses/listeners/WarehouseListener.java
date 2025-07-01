@@ -264,7 +264,7 @@ public class WarehouseListener implements Listener {
             HashMap<String, String> placeholders = new HashMap<>();
             placeholders.put("{amount}", String.valueOf(amount));
             placeholders.put("{item}", itemName);
-            player.sendMessage(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemAdded, placeholders));
+            player.sendMessage(FamiUtils.formatWithPrefix(FamiUtils.replaceAndFormat(RPULanguageAddon.WarehouseItemAdded, placeholders)));
 
             // Update the sign
             updateWarehouseSign(block, warehouse);
@@ -311,7 +311,7 @@ public class WarehouseListener implements Listener {
      * @param block The sign block
      * @param warehouse The warehouse
      */
-    private void updateWarehouseSign(Block block, Warehouse warehouse) {
+    public static void updateWarehouseSign(Block block, Warehouse warehouse) {
         if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
 

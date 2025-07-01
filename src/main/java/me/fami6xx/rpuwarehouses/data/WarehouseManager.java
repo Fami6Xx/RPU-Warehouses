@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import me.fami6xx.rpuwarehouses.RPU_Warehouses;
 import me.fami6xx.rpuwarehouses.data.gson.GsonManager;
+import me.fami6xx.rpuwarehouses.listeners.WarehouseListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -204,6 +206,16 @@ public class WarehouseManager {
      */
     public void addItemToWarehouse(Warehouse warehouse, ItemStack item, int amount) {
         warehouse.addItem(item, amount);
+
+        Location signLocation = warehouse.getSignLocation();
+        if (signLocation != null) {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                // Update the sign to reflect the new item count
+                Block block = signLocation.getBlock();
+                WarehouseListener.updateWarehouseSign(block, warehouse);
+            });
+        }
+
         saveWarehouses();
     }
 
@@ -218,6 +230,15 @@ public class WarehouseManager {
     public boolean removeItemFromWarehouse(Warehouse warehouse, ItemStack item, int amount) {
         boolean result = warehouse.removeItem(item, amount);
         if (result) {
+            Location signLocation = warehouse.getSignLocation();
+            if (signLocation != null) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    // Update the sign to reflect the new item count
+                    Block block = signLocation.getBlock();
+                    WarehouseListener.updateWarehouseSign(block, warehouse);
+                });
+            }
+
             saveWarehouses();
         }
         return result;
