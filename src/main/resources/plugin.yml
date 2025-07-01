@@ -3,3 +3,26 @@ version: '${project.version}'
 main: me.fami6xx.rpuwarehouses.RPU_Warehouses
 api-version: '1.14'
 depend: [RPUniverse]
+
+commands:
+  warehouse:
+    description: Warehouse management commands
+    usage: /warehouse
+    permission: rpuwarehouses.use
+
+permissions:
+  rpuwarehouses.use:
+    description: Allows using warehouses
+    default: true
+  rpuwarehouses.create:
+    description: Allows creating warehouses
+    default: op
+  rpuwarehouses.add:
+    description: Allows adding items to warehouses
+    default: true
+  rpuwarehouses.take:
+    description: Allows taking items from warehouses
+    default: true
+  rpuwarehouses.admin:
+    description: Allows administrative actions like setting page limits
+    default: op
