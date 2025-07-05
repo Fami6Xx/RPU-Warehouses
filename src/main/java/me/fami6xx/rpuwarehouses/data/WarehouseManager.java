@@ -205,8 +205,8 @@ public class WarehouseManager {
      * @param amount The amount to add
      */
     public boolean addItemToWarehouse(Warehouse warehouse, ItemStack item, int amount) {
-        // Check if the warehouse is full or if the item exceeds the page limit
-        if (warehouse.isFull() || !warehouse.canAddItem(item, amount)) {
+        // Check if the item exceeds the page limit
+        if (!warehouse.canAddItem(item, amount)) {
             plugin.getLogger().warning("Cannot add item to warehouse: " + warehouse.getId());
             return false;
         }
