@@ -250,7 +250,9 @@ public class WarehouseListener implements Listener {
             item.setAmount(1); // Set to 1 for storage key
 
             // Add the item to the warehouse
-            manager.addItemToWarehouse(warehouse, item, amount);
+            if(!manager.addItemToWarehouse(warehouse, item, amount)) {
+                FamiUtils.sendMessageWithPrefix(player, RPULanguageAddon.WarehouseFull);
+            }
 
             // Remove the item from the player's hand
             if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {

@@ -30,6 +30,7 @@ public class RPULanguageAddon extends AbstractAddonLanguage {
     public static String WarehouseItemTaken = "&aTook &f{amount}x {item} &afrom the warehouse!";
     public static String WarehouseNotEnoughItems = "&cThe warehouse doesn't have enough of that item!";
     public static String WarehouseInventoryFull = "&cYour inventory is full!";
+    public static String WarehouseFull = "&cThe warehouse is full! You cannot add more items.";
     public static String WarehouseSignFormat = "&c&lWAREHOUSE\n&7Job: &f{jobName}\n&7Items: &f{itemCount}\n&7Click to open";
 
 

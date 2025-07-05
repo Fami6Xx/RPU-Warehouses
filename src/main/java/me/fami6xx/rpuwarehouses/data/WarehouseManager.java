@@ -204,7 +204,12 @@ public class WarehouseManager {
      * @param item The item to add
      * @param amount The amount to add
      */
-    public void addItemToWarehouse(Warehouse warehouse, ItemStack item, int amount) {
+    public boolean addItemToWarehouse(Warehouse warehouse, ItemStack item, int amount) {
+        // Check if the warehouse is full or if the item exceeds the page limit
+        if (warehouse.isFull() || !warehouse.canAddItem(item, amount)) {
+            plugin.getLogger().warning("Cannot add item to warehouse: " + warehouse.getId());
+            return false;
+        }
         warehouse.addItem(item, amount);
 
         Location signLocation = warehouse.getSignLocation();
@@ -217,6 +222,7 @@ public class WarehouseManager {
         }
 
         saveWarehouses();
+        return true;
     }
 
     /**
