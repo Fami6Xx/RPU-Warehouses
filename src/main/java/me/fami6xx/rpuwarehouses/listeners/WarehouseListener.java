@@ -252,6 +252,7 @@ public class WarehouseListener implements Listener {
             // Add the item to the warehouse
             if(!manager.addItemToWarehouse(warehouse, item, amount)) {
                 FamiUtils.sendMessageWithPrefix(player, RPULanguageAddon.WarehouseFull);
+                return;
             }
 
             // Remove the item from the player's hand
