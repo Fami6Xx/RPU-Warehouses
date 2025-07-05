@@ -153,6 +153,32 @@ public class Warehouse {
     }
 
     /**
+     * Checks if an item can be added to the warehouse without exceeding the job page limit.
+     *
+     * @param item The item to check
+     * @return True if the item can be added, false if it would exceed the page limit
+     */
+    public boolean canAddItem(ItemStack item) {
+        // Get the page limit for this job
+        int pageLimit = JobPageLimits.getInstance().getPageLimit(jobName);
+
+        // Calculate the maximum number of unique items allowed
+        int maxItems = pageLimit * 28; // 28 slots per paginated page
+
+        // Check if the item already exists in the warehouse
+        String key = getItemKey(item);
+        boolean itemExists = items.containsKey(key);
+
+        // If the item already exists, we're not adding a new unique item, so it's allowed
+        if (itemExists) {
+            return true;
+        }
+
+        // If the item doesn't exist, check if adding it would exceed the page limit
+        return items.size() < maxItems;
+    }
+
+    /**
      * Gets a unique key for an item based on its type and metadata.
      *
      * @param item The item to get a key for
