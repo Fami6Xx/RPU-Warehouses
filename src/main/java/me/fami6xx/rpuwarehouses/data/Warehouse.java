@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 public class Warehouse {
     private final UUID id;
-    private final String jobName;
+    private String jobName;
     private final Location signLocation;
     private final Map<String, ItemStack> items;
 
@@ -229,5 +229,16 @@ public class Warehouse {
         map.put("items", serializedItems);
 
         return map;
+    }
+
+    /**
+     * Sets the job name for this warehouse.
+     * <p>
+     * Does not update the sign.
+     *
+     * @param jobName The new job name
+     */
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
     }
 }

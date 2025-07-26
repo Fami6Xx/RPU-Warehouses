@@ -1,6 +1,7 @@
 package me.fami6xx.rpuwarehouses.listeners;
 
 import me.fami6xx.rpuniverse.RPUniverse;
+import me.fami6xx.rpuniverse.core.api.JobRenamedEvent;
 import me.fami6xx.rpuniverse.core.menuapi.PlayerMenu;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
 import me.fami6xx.rpuwarehouses.RPU_Warehouses;
@@ -101,7 +102,7 @@ public class WarehouseListener implements Listener {
             Player player = event.getPlayer();
 
             // Check if the player has permission
-            if (!player.hasPermission("rpuwarehouses.use")) {
+            if (!RPU_Warehouses.hasWarehousePermission(warehouse, player)) {
                 player.sendMessage(ChatColor.RED + "You don't have permission to use warehouses!");
                 return;
             }
@@ -147,7 +148,7 @@ public class WarehouseListener implements Listener {
             event.setCancelled(true);
 
             // Check if the player has permission
-            if (!player.hasPermission("rpuwarehouses.take")) {
+            if (!RPU_Warehouses.hasWarehousePermission(warehouse, player)) {
                 player.sendMessage(ChatColor.RED + "You don't have permission to take items from warehouses!");
                 return;
             }
@@ -204,6 +205,25 @@ public class WarehouseListener implements Listener {
     }
 
     @EventHandler
+    public void onJobRenameEvent(JobRenamedEvent event) {
+        // Get the old job name and new job name
+        String oldJobName = event.getOldName();
+        String newJobName = event.getNewName();
+
+        // Get the warehouse manager
+        WarehouseManager manager = RPU_Warehouses.getInstance().getWarehouseManager();
+
+        // Get all warehouses for the old job name
+        List<Warehouse> warehouses = manager.getWarehousesByJob(oldJobName);
+
+        // Rename each warehouse's job name
+        for (Warehouse warehouse : warehouses) {
+            warehouse.setJobName(newJobName);
+            updateWarehouseSign(warehouse.getSignLocation().getBlock(), warehouse);
+        }
+    }
+
+    @EventHandler
     public void onWarehouseAddItem(PlayerInteractEvent event) {
         // Check if the player right-clicked a block with an item
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null || event.getItem() == null) {
@@ -239,7 +259,7 @@ public class WarehouseListener implements Listener {
             event.setCancelled(true);
 
             // Check if the player has permission
-            if (!player.hasPermission("rpuwarehouses.add")) {
+            if (!RPU_Warehouses.hasWarehousePermission(warehouse, player)) {
                 player.sendMessage(ChatColor.RED + "You don't have permission to add items to warehouses!");
                 return;
             }
@@ -320,6 +340,18 @@ public class WarehouseListener implements Listener {
      * @param warehouse The warehouse
      */
     public static void updateWarehouseSign(Block block, Warehouse warehouse) {
+        boolean unloadChunk = false;
+
+        if (!block.getLocation().isChunkLoaded()) {
+            boolean hasFailedChunkLoad = block.getLocation().getChunk().load();
+            unloadChunk = true;
+            if (hasFailedChunkLoad) {
+                // If the chunk failed to load, we can't update the sign
+                RPU_Warehouses.getInstance().getLogger().warning("Failed to load chunk for warehouse sign at " + block.getLocation());
+                return;
+            }
+        }
+
         if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
 
@@ -334,6 +366,11 @@ public class WarehouseListener implements Listener {
             }
 
             sign.update();
+
+            if (unloadChunk) {
+                // Unload the chunk if it was loaded for the sign update
+                block.getLocation().getChunk().unload(true);
+            }
         }
     }
 }
