@@ -1,5 +1,7 @@
 package me.fami6xx.rpuwarehouses;
 
+import me.fami6xx.rpuniverse.RPUniverse;
+import me.fami6xx.rpuniverse.core.misc.PlayerData;
 import me.fami6xx.rpuwarehouses.commands.WarehouseCommand;
 import me.fami6xx.rpuwarehouses.data.JobPageLimits;
 import me.fami6xx.rpuwarehouses.data.Warehouse;
@@ -7,6 +9,7 @@ import me.fami6xx.rpuwarehouses.data.WarehouseManager;
 import me.fami6xx.rpuwarehouses.listeners.WarehouseListener;
 import me.fami6xx.rpuwarehouses.other.RPULanguageAddon;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class RPU_Warehouses extends JavaPlugin {
@@ -55,6 +58,34 @@ public final class RPU_Warehouses extends JavaPlugin {
         }
 
         getLogger().info("RPU-Warehouses has been disabled!");
+    }
+
+    /**
+     * Checks if the player has permission to access the warehouse.
+     *
+     * @param warehouse The warehouse to check
+     * @param player The player to check
+     * @return true if the player has permission, false otherwise
+     */
+    public static boolean hasWarehousePermission(Warehouse warehouse, Player player) {
+        if (warehouse == null || player == null) {
+            return false;
+        }
+
+        PlayerData data = RPUniverse.getPlayerData(player.getUniqueId().toString());
+        if (data == null) {
+            return false;
+        }
+
+        String jobName = warehouse.getJobName();
+        if (jobName == null || jobName.isEmpty()) {
+            return false;
+        }
+        if (data.getSelectedPlayerJob() == null || !data.getSelectedPlayerJob().getName().equalsIgnoreCase(jobName)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
